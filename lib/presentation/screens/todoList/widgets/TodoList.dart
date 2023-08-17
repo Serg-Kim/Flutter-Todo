@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_todo/services/api/todo/todo.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_todo/blocs/todos/todos_bloc.dart';
 import 'package:flutter_todo/utils/constants/colors.dart';
 
 import '../../../../model/entity/todo.dart';
@@ -16,107 +17,80 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
-  List<Todo> _todos = <Todo>[];
-  final TextEditingController _textFieldController = TextEditingController();
-
-  void sortTodos() {
-    final List<Todo> completedTodos = _todos.where((e) => e.completed == true).toList();
-    final List<Todo> uncompletedTodos = _todos.where((e) => e.completed == false).toList();
-
-    setState(() {
-      _todos = [...uncompletedTodos, ...completedTodos];
-    });
-  }
-
-  void _addTodoItem(String name) {
-    setState(() {
-      _todos.insert(0, Todo(userId: 1, title: name, completed: false, id: Random().nextInt(100)));
-    });
-    _textFieldController.clear();
-  }
-
-  void _handleTodoChange(Todo todo) {
-    final int currentIndex = _todos.indexWhere((element) => element.id == todo.id);
-    int completedIndex = _todos.indexWhere((element) => element.completed == true);
-
-    if (completedIndex == -1) completedIndex = _todos.length;
-
-    setState(() {
-      todo.completed = !todo.completed;
-
-      if (todo.completed == true) {
-        _todos.insert(completedIndex, todo);
-       _todos.removeAt(currentIndex);
-      } else {
-        _todos.removeAt(currentIndex);
-        _todos.insert(0, todo);
-      }
-    });
-  }
-
-  void _deleteTodo(Todo todo) {
-    setState(() {
-      _todos.removeWhere((element) => element.id == todo.id);
-    });
-  }
-
-  void fetchTodos() async {
-    final fetchedTodos = await getTodos();
-
-    setState(() {
-      for (var element in fetchedTodos!) {
-        _todos.add(element);
-      }
-    });
-
-    sortTodos();
-  }
+  late TextEditingController _textFieldController;
 
   @override
   void initState() {
     super.initState();
 
-    fetchTodos();
+    _textFieldController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Todo List', style: FONTS.appBarTitle),
-        centerTitle: true,
-      ),
-      body: _todos.isNotEmpty
-          ? (ListView.builder(
-        itemCount: _todos.length,
-        itemBuilder: (context, index) {
-          return TodoItem(
-            todo: _todos[index],
-            onTodoChanged: _handleTodoChange,
-            removeTodo: _deleteTodo,
-          );
-        },
-    ))
-      //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-      //   }).toList(),
-      // ))
-          : Center(
-          child: Text(
-            'List is empty',
-            style: FONTS.mediumStyle,
-          )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _displayDialog(),
-        tooltip: 'Add Todo',
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        child: Icon(Icons.add, color: COLORS.gray,),
-      ),
-    );
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text('Todo List', style: FONTS.appBarTitle),
+          centerTitle: true,
+        ),
+        body: BlocBuilder<TodosBloc, TodosState>(builder: (context, state) {
+          if (state is TodosLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is TodosLoaded) {
+            return (ListView.builder(
+              itemCount: state.todos.length,
+              itemBuilder: (context, index) {
+                return TodoItem(
+                  todo: state.todos[index],
+                );
+              },
+            ));
+          } else {
+            return Center(
+                child: Text(
+              'List is empty',
+              style: FONTS.mediumStyle,
+            ));
+          }
+        }),
+        floatingActionButton: BlocListener<TodosBloc, TodosState>(
+          listener: (context, state) {
+            if (state is TodosLoaded) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Todo  updated"),
+              ));
+            }
+          },
+          child: FloatingActionButton(
+            onPressed: () async {
+              Todo? todo = await _displayDialog();
+              if (todo != null) {
+                context.read<TodosBloc>().add(
+                      AddTodo(todo: todo),
+                    );
+              }
+            },
+            tooltip: 'Add Todo',
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            child: Icon(
+              Icons.add,
+              color: COLORS.gray,
+            ),
+          ),
+        ));
   }
 
-  Future<void> _displayDialog() async {
-    return showDialog<void>(
+  Future<Todo?> _displayDialog() {
+    return showDialog<Todo>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -148,8 +122,13 @@ class _TodoListState extends State<TodoList> {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                _addTodoItem(_textFieldController.text);
+                Navigator.of(context).pop(Todo(
+                  userId: 1,
+                  id: Random().nextInt(100),
+                  title: _textFieldController.text,
+                  completed: false,
+                ));
+                _textFieldController.clear();
               },
               child: const Text('Add', style: TextStyle(color: Colors.white)),
             ),

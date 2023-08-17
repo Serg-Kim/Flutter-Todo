@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_todo/blocs/todos/todos_bloc.dart';
+import 'package:flutter_todo/repositories/todo_repository.dart';
 
 import '../presentation/screens/todoList/widgets/TodoList.dart';
 import '../utils/constants/colors.dart';
@@ -13,7 +16,18 @@ class TodoApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: COLORS.lightBlue),
         useMaterial3: true,
       ),
-      home: const TodoList(),
+      home: RepositoryProvider(
+        create: (context) => TodoRepository(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+                create: (context) => TodosBloc(
+                      RepositoryProvider.of<TodoRepository>(context),
+                    )..add(const FetchTodos()))
+          ],
+          child: const TodoList(),
+        ),
+      ),
     );
   }
 }

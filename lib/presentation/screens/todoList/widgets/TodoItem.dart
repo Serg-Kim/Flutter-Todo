@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo/blocs/todos/todos_bloc.dart';
 import '../../../../model/entity/todo.dart';
 
 class TodoItem extends StatelessWidget {
-  TodoItem(
-      {required this.todo,
-        required this.onTodoChanged,
-        required this.removeTodo})
-      : super(key: ObjectKey(todo));
+  TodoItem({required this.todo}) : super(key: ObjectKey(todo));
 
   final Todo todo;
-  final void Function(Todo todo) onTodoChanged;
-  final void Function(Todo todo) removeTodo;
 
   TextStyle? _getTextStyle(bool checked) {
     if (!checked) return null;
@@ -25,14 +20,14 @@ class TodoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        onTodoChanged(todo);
+        UpdateTodo(todo: todo);
       },
       leading: Checkbox(
         checkColor: Colors.white,
         activeColor: Colors.blueAccent,
         value: todo.completed,
         onChanged: (value) {
-          onTodoChanged(todo);
+          UpdateTodo(todo: todo);
         },
       ),
       title: Row(children: <Widget>[
@@ -47,7 +42,7 @@ class TodoItem extends StatelessWidget {
           ),
           alignment: Alignment.centerRight,
           onPressed: () {
-            removeTodo(todo);
+            DeleteTodo(todo: todo);
           },
         ),
       ]),

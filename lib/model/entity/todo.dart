@@ -11,6 +11,23 @@ class Todo {
         id: id ?? this.id,
         userId: userId ?? this.userId,
         title: title ?? this.title,
-        completed: completed ?? this.completed);
+        completed: completed ?? this.completed
+    );
+  }
+
+  Map toJson() => {
+    'userId': userId,
+    'id': id,
+    'title': title,
+    'completed': completed,
+  };
+
+  static convertFromJson({required int id, required int userId, required String title, required bool completed}) {
+    return Todo(
+        id: id,
+        userId: userId,
+        title: title,
+        completed: completed,
+    );
   }
 }

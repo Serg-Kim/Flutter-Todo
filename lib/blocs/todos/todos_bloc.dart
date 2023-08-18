@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../model/entity/todo.dart';
@@ -11,7 +14,7 @@ part 'todos_state.dart';
 class TodosBloc extends Bloc<TodoEvent, TodosState> {
   final TodoRepository _todoRepository;
 
-  TodosBloc(this._todoRepository) : super(TodosLoaded()) {
+  TodosBloc(this._todoRepository) : super(const TodosLoaded()) {
     on<FetchTodos>(_onFetchTodos);
     on<AddTodo>(_onAddTodo);
     on<DeleteTodo>(_onDeleteTodo);
@@ -31,6 +34,19 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
 
       todos = [...uncompletedTodos, ...completedTodos];
 
+      // This method for sorting of todos has only iOS specific
+      // const channel = MethodChannel('todosChannel');
+      // final String todosFromJSON = await channel.invokeMethod('sortTodos', json.encode(todos));
+      // List<dynamic> encodedTodos = jsonDecode(todosFromJSON);
+      //
+      // todos = encodedTodos
+      //     .map((todo) => Todo(
+      //     userId: todo["userId"],
+      //     title: todo["title"],
+      //     completed: todo["completed"],
+      //     id: todo["id"]))
+      //     .toList();
+
       emit(TodosLoaded(todos: todos));
     } catch (e) {
       emit(TodosError(e.toString()));
@@ -41,6 +57,18 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
     final state = this.state;
 
     if (state is TodosLoaded) {
+      // This method return todo with title == "New Todo" and hs only iOS specific
+      // const channel = MethodChannel('todosChannel');
+      // final String todo = await channel.invokeMethod('printNewTodo', json.encode(event.todo));
+      // dynamic encodedTodo = jsonDecode(todo);
+      //
+      // emit(TodosLoaded(todos: List.from(state.todos)..insert(0, Todo.convertFromJson(
+      //     id: encodedTodo["id"],
+      //     userId: encodedTodo["userId"],
+      //     title: encodedTodo["title"],
+      //     completed: encodedTodo["completed"])
+      // )));
+
       emit(TodosLoaded(todos: List.from(state.todos)..insert(0, event.todo)));
     }
   }
@@ -81,6 +109,19 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
         todos.removeAt(currentIndex);
         todos.insert(0, event.todo);
       }
+
+      // This method for sorting of todos has only iOS specific
+      // const channel = MethodChannel('todosChannel');
+      // final String todosFromJSON = await channel.invokeMethod('sortTodos', json.encode(todos));
+      // List<dynamic> encodedTodos = jsonDecode(todosFromJSON);
+      //
+      // todos = encodedTodos
+      //     .map((todo) => Todo(
+      //     userId: todo["userId"],
+      //     title: todo["title"],
+      //     completed: todo["completed"],
+      //     id: todo["id"]))
+      //     .toList();
 
       emit(TodosLoaded(todos: todos));
     }

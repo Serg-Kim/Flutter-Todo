@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:flutter_todo/model/entity/todo.dart';
-import 'package:flutter_todo/repositories/todo_repository.dart';
+import '../../model/entity/todo.dart';
+import '../../repositories/todo_repository.dart';
 
 part 'todos_event.dart';
 part 'todos_state.dart';
@@ -16,6 +16,7 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
     on<AddTodo>(_onAddTodo);
     on<DeleteTodo>(_onDeleteTodo);
     on<UpdateTodo>(_onUpdateTodo);
+    on<CompleteTodo>(_onCompleteTodo);
   }
 
   Future<void> _onFetchTodos(FetchTodos event, Emitter<TodosState> emit) async {
@@ -38,7 +39,7 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
 
   void _onAddTodo(AddTodo event, Emitter<TodosState> emit) {
     final state = this.state;
-    print(11111);
+
     if (state is TodosLoaded) {
       emit(TodosLoaded(todos: List.from(state.todos)..insert(0, event.todo)));
     }
@@ -56,7 +57,7 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
     }
   }
 
-  void _onUpdateTodo(UpdateTodo event, Emitter<TodosState> emit) {
+  void _onCompleteTodo(CompleteTodo event, Emitter<TodosState> emit) {
     final state = this.state;
 
     if (state is TodosLoaded) {
@@ -80,6 +81,20 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
         todos.removeAt(currentIndex);
         todos.insert(0, event.todo);
       }
+
+      emit(TodosLoaded(todos: todos));
+    }
+  }
+
+  void _onUpdateTodo(UpdateTodo event, Emitter<TodosState> emit) {
+    final state = this.state;
+
+    if (state is TodosLoaded) {
+      List<Todo> todos = state.todos;
+
+      todos = (state.todos.map((todo) {
+        return todo.id == event.todo.id ? event.todo : todo;
+      })).toList();
 
       emit(TodosLoaded(todos: todos));
     }

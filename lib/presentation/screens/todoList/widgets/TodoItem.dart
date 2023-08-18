@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo/blocs/todos/todos_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../model/entity/todo.dart';
+import '../../../../blocs/todos/todos_bloc.dart';
+
+import 'TodoDialog.dart';
 
 class TodoItem extends StatelessWidget {
   TodoItem({required this.todo}) : super(key: ObjectKey(todo));
@@ -19,15 +23,20 @@ class TodoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () {
-        UpdateTodo(todo: todo);
+      onTap: () async {
+        String? editedTitle = await TodoDialog.displayDialog(context, false);
+        if (editedTitle != null && context.mounted) {
+          context.read<TodosBloc>().add(
+            UpdateTodo(todo: todo.copyWith(title: editedTitle)),
+          );
+        }
       },
       leading: Checkbox(
         checkColor: Colors.white,
         activeColor: Colors.blueAccent,
         value: todo.completed,
         onChanged: (value) {
-          UpdateTodo(todo: todo);
+          context.read<TodosBloc>().add(CompleteTodo(todo: todo.copyWith(completed: !todo.completed)));
         },
       ),
       title: Row(children: <Widget>[
@@ -42,7 +51,7 @@ class TodoItem extends StatelessWidget {
           ),
           alignment: Alignment.centerRight,
           onPressed: () {
-            DeleteTodo(todo: todo);
+            context.read<TodosBloc>().add(DeleteTodo(todo: todo));
           },
         ),
       ]),

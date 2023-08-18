@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_todo/model/entity/todo.dart';
+
+import '../model/entity/todo.dart';
 
 class TodoRepository {
   final String getTodosUrl =

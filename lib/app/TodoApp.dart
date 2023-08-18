@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_todo/blocs/todos/todos_bloc.dart';
-import 'package:flutter_todo/repositories/todo_repository.dart';
+
+import '../blocs/todos/todos_bloc.dart';
+import '../repositories/todo_repository.dart';
 
 import '../presentation/screens/todoList/widgets/TodoList.dart';
+
 import '../utils/constants/colors.dart';
 
 class TodoApp extends StatelessWidget {

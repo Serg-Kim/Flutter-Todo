@@ -2,12 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_todo/blocs/todos/todos_bloc.dart';
-import 'package:flutter_todo/utils/constants/colors.dart';
 
-import '../../../../model/entity/todo.dart';
-import '../../../../utils/constants/fonts.dart';
+import 'TodoDialog.dart';
 import 'TodoItem.dart';
+
+import '../../../../blocs/todos/todos_bloc.dart';
+import '../../../../model/entity/todo.dart';
+
+import '../../../../utils/constants/colors.dart';
+import '../../../../utils/constants/fonts.dart';
 
 class TodoList extends StatefulWidget {
   const TodoList({super.key});
@@ -62,20 +65,19 @@ class _TodoListState extends State<TodoList> {
             ));
           }
         }),
-        floatingActionButton: BlocListener<TodosBloc, TodosState>(
-          listener: (context, state) {
-            if (state is TodosLoaded) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Todo  updated"),
-              ));
-            }
-          },
-          child: FloatingActionButton(
+        floatingActionButton:
+          FloatingActionButton(
             onPressed: () async {
-              Todo? todo = await _displayDialog();
-              if (todo != null) {
+              String? title = await TodoDialog.displayDialog(context, true);
+              if (title != null && mounted) {
                 context.read<TodosBloc>().add(
-                      AddTodo(todo: todo),
+                      AddTodo(todo:
+                        Todo(
+                          userId: 1,
+                          id: Random().nextInt(100),
+                          title: title,
+                          completed: false,
+                        )),
                     );
               }
             },
@@ -86,55 +88,6 @@ class _TodoListState extends State<TodoList> {
               color: COLORS.gray,
             ),
           ),
-        ));
-  }
-
-  Future<Todo?> _displayDialog() {
-    return showDialog<Todo>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add a todo'),
-          content: TextField(
-            controller: _textFieldController,
-            decoration: const InputDecoration(hintText: 'Type your todo'),
-            autofocus: true,
-          ),
-          actions: <Widget>[
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _textFieldController.clear();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(Todo(
-                  userId: 1,
-                  id: Random().nextInt(100),
-                  title: _textFieldController.text,
-                  completed: false,
-                ));
-                _textFieldController.clear();
-              },
-              child: const Text('Add', style: TextStyle(color: Colors.white)),
-            ),
-          ],
         );
-      },
-    );
   }
 }

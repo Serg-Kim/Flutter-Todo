@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mmkv/mmkv.dart';
 
 import '../../model/entity/todo.dart';
 import '../../repositories/todo_repository.dart';
@@ -13,6 +14,8 @@ part 'todos_state.dart';
 
 class TodosBloc extends Bloc<TodoEvent, TodosState> {
   final TodoRepository _todoRepository;
+
+  var mmkv = MMKV('todos');
 
   TodosBloc(this._todoRepository) : super(const TodosLoaded()) {
     on<FetchTodos>(_onFetchTodos);
@@ -25,7 +28,27 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
   Future<void> _onFetchTodos(FetchTodos event, Emitter<TodosState> emit) async {
     emit(TodosLoading());
     try {
-      List<Todo> todos = await _todoRepository.getTodos();
+      List<Todo> fetchedTodos = await _todoRepository.getTodos();
+
+      List<dynamic> storedTodosFromJSON = jsonDecode(mmkv.decodeString('todos')!);
+
+      List<Todo> storedTodos = storedTodosFromJSON
+          .map((todo) => Todo(
+          userId: todo["userId"],
+          title: todo["title"],
+          completed: todo["completed"],
+          id: todo["id"]))
+          .toList();
+
+      Iterable<int> storedTodosIDs = storedTodos.map((todo) {
+        return todo.id;
+      });
+
+      fetchedTodos = fetchedTodos.where((todo) {
+        return !storedTodosIDs.contains(todo.id);
+      }).toList();
+
+      List<Todo> todos = [...fetchedTodos, ...storedTodos];
 
       final List<Todo> completedTodos =
           todos.where((e) => e.completed == true).toList();
@@ -46,6 +69,8 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
       //     completed: todo["completed"],
       //     id: todo["id"]))
       //     .toList();
+
+      mmkv.encodeString('todos', json.encode(todos));
 
       emit(TodosLoaded(todos: todos));
     } catch (e) {
@@ -69,7 +94,11 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
       //     completed: encodedTodo["completed"])
       // )));
 
-      emit(TodosLoaded(todos: List.from(state.todos)..insert(0, event.todo)));
+      List<Todo> todos = List.from(state.todos)..insert(0, event.todo);
+
+      mmkv.encodeString('todos', json.encode(todos));
+
+      emit(TodosLoaded(todos: todos));
     }
   }
 
@@ -80,6 +109,8 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
       List<Todo> todos = state.todos.where((todo) {
         return todo.id != event.todo.id;
       }).toList();
+
+      mmkv.encodeString('todos', json.encode(todos));
 
       emit(TodosLoaded(todos: todos));
     }
@@ -123,6 +154,8 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
       //     id: todo["id"]))
       //     .toList();
 
+      mmkv.encodeString('todos', json.encode(todos));
+
       emit(TodosLoaded(todos: todos));
     }
   }
@@ -136,6 +169,8 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
       todos = (state.todos.map((todo) {
         return todo.id == event.todo.id ? event.todo : todo;
       })).toList();
+
+      mmkv.encodeString('todos', json.encode(todos));
 
       emit(TodosLoaded(todos: todos));
     }

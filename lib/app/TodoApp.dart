@@ -18,6 +18,7 @@ class TodoApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: COLORS.lightBlue),
         useMaterial3: true,
       ),
+      debugShowCheckedModeBanner: false,
       home: RepositoryProvider(
         create: (context) => TodoRepository(),
         child: MultiBlocProvider(

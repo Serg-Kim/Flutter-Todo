@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_todo/presentation/screens/todoItem/TodoItemScreen.dart';
 
 import '../../../../model/entity/todo.dart';
 import '../../../../blocs/todos/todos_bloc.dart';
@@ -42,6 +43,20 @@ class TodoItem extends StatelessWidget {
       title: Row(children: <Widget>[
         Expanded(
           child: Text(todo.title, style: _getTextStyle(todo.completed)),
+        ),
+        IconButton(
+          iconSize: 25,
+          icon: const Icon(
+            Icons.arrow_forward_outlined,
+            color: Colors.blue,
+          ),
+          alignment: Alignment.centerRight,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TodoItemScreen(todo: todo))
+            );
+          },
         ),
         IconButton(
           iconSize: 30,

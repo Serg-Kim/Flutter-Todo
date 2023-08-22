@@ -9,21 +9,7 @@ abstract class TodoEvent extends Equatable {
 }
 
 class FetchTodos extends TodoEvent {
-  final List<Todo> todos;
-
-  const FetchTodos({this.todos = const <Todo>[]});
-
-  @override
-  List<Object> get props => [todos];
-}
-
-class SortTodos extends TodoEvent {
-  final List<Todo> todos;
-
-  const SortTodos({this.todos = const <Todo>[]});
-
-  @override
-  List<Object> get props => [todos];
+  const FetchTodos();
 }
 
 class AddTodo extends TodoEvent {
@@ -60,4 +46,12 @@ class DeleteTodo extends TodoEvent {
 
   @override
   List<Object> get props => [todo];
+}
+
+class DeleteAllTodo extends TodoEvent {
+  const DeleteAllTodo();
+}
+
+class CompleteAllTodo extends TodoEvent {
+  const CompleteAllTodo();
 }

@@ -42,6 +42,21 @@ class _TodoListStateScreen extends State<TodoListScreen> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text('Todo List', style: FONTS.appBarTitle),
           centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.read<TodosBloc>().add(const CompleteAllTodo());
+                setState(() {});
+              },
+              icon: const Icon(Icons.checklist),
+            ),
+            IconButton(
+                onPressed: () {
+                  context.read<TodosBloc>().add(const DeleteAllTodo());
+                },
+                icon: const Icon(Icons.delete_forever),
+            )
+          ],
         ),
         body: BlocBuilder<TodosBloc, TodosState>(builder: (context, state) {
           if (state is TodosLoading) {

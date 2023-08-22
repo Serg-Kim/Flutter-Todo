@@ -23,6 +23,8 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
     on<DeleteTodo>(_onDeleteTodo);
     on<UpdateTodo>(_onUpdateTodo);
     on<CompleteTodo>(_onCompleteTodo);
+    on<CompleteAllTodo>(_onCompleteAllTodo);
+    on<DeleteAllTodo>(_onDeleteAllTodo);
   }
 
   Future<void> _onFetchTodos(FetchTodos event, Emitter<TodosState> emit) async {
@@ -173,6 +175,37 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
       todos = (state.todos.map((todo) {
         return todo.id == event.todo.id ? event.todo : todo;
       })).toList();
+
+      mmkv.encodeString('todos', json.encode(todos));
+
+      emit(TodosLoaded(todos: todos));
+    }
+  }
+
+  void _onDeleteAllTodo(DeleteAllTodo event, Emitter<TodosState> emit) {
+    final state = this.state;
+
+    if (state is TodosLoaded) {
+      List<Todo> todos = [];
+
+      mmkv.encodeString('todos', json.encode(todos));
+
+      emit(TodosLoaded(todos: todos));
+    }
+  }
+
+  void _onCompleteAllTodo(CompleteAllTodo event, Emitter<TodosState> emit) {
+    final state = this.state;
+
+    if (state is TodosLoaded) {
+      List<Todo> todos = state.todos;
+      final isAllCompleted = todos.every((todo) => todo.completed == true);
+
+      if (isAllCompleted == true) {
+        for (var todo in todos) { todo.completed = false; }
+      } else {
+        for (var todo in todos) { todo.completed = true; }
+      }
 
       mmkv.encodeString('todos', json.encode(todos));
 

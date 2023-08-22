@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'TodoDialog.dart';
-import 'TodoItem.dart';
+import 'widgets/TodoDialog.dart';
+import 'widgets/TodoItem.dart';
 
 import '../../../../blocs/todos/todos_bloc.dart';
 import '../../../../model/entity/todo.dart';
@@ -12,14 +12,14 @@ import '../../../../model/entity/todo.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/fonts.dart';
 
-class TodoList extends StatefulWidget {
-  const TodoList({super.key});
+class TodoListScreen extends StatefulWidget {
+  const TodoListScreen({super.key});
 
   @override
-  State<TodoList> createState() => _TodoListState();
+  State<TodoListScreen> createState() => _TodoListStateScreen();
 }
 
-class _TodoListState extends State<TodoList> {
+class _TodoListStateScreen extends State<TodoListScreen> {
   late TextEditingController _textFieldController;
 
   @override

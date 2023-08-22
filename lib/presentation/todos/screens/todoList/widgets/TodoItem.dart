@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_todo/presentation/screens/todoItem/TodoItemScreen.dart';
 
-import '../../../../model/entity/todo.dart';
-import '../../../../blocs/todos/todos_bloc.dart';
+import '../../../../../model/entity/todo.dart';
+import '../../../../../blocs/todos/todos_bloc.dart';
 
 import 'TodoDialog.dart';
 
@@ -52,10 +51,8 @@ class TodoItem extends StatelessWidget {
           ),
           alignment: Alignment.centerRight,
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TodoItemScreen(todo: todo))
-            );
+            Navigator.of(context
+            ).pushNamed('todos/item', arguments: todo);
           },
         ),
         IconButton(

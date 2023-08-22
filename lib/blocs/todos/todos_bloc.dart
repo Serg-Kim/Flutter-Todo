@@ -30,7 +30,11 @@ class TodosBloc extends Bloc<TodoEvent, TodosState> {
     try {
       List<Todo> fetchedTodos = await _todoRepository.getTodos();
 
-      List<dynamic> storedTodosFromJSON = jsonDecode(mmkv.decodeString('todos')!);
+      List<dynamic> storedTodosFromJSON = [];
+
+      if (mmkv.decodeString('todos').runtimeType == String) {
+        storedTodosFromJSON = jsonDecode(mmkv.decodeString('todos')!);
+      }
 
       List<Todo> storedTodos = storedTodosFromJSON
           .map((todo) => Todo(

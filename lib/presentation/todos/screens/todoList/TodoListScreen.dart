@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_todo/navigation/RootNavigator.dart';
+import 'package:flutter_todo/presentation/auth/screens/AuthScreen.dart';
 
+import '../../../../blocs/auth/auth_bloc.dart';
 import 'widgets/TodoDialog.dart';
 import 'widgets/TodoItem.dart';
 
@@ -42,6 +45,21 @@ class _TodoListStateScreen extends State<TodoListScreen> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text('Todo List', style: FONTS.appBarTitle),
           centerTitle: true,
+          leading: IconButton(
+            onPressed: () {
+              context.read<AuthBloc>().add(const Logout());
+              Navigator.of(context, rootNavigator: true)
+                  .pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (BuildContext context) {
+                    return const RootNavigator();
+                  },
+                ),
+                    (_) => false,
+              );
+            },
+            icon: const Icon(Icons.exit_to_app),
+          ),
           actions: [
             IconButton(
               onPressed: () {

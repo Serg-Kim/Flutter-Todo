@@ -63,6 +63,10 @@ class _TodoItemStateScreen extends State<TodoItemScreen> {
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               color: Theme.of(context).colorScheme.outlineVariant,
               image: const DecorationImage(
+                colorFilter: ColorFilter.mode(
+                  Colors.grey,
+                  BlendMode.modulate,
+                ),
                 image: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
                 fit: BoxFit.cover,
               ),

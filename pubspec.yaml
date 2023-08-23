@@ -71,3 +71,6 @@ flutter:
           weight: 500
         - asset: lib/assets/fonts/Quicksand-SemiBold.ttf
           weight: 600
+
+  assets:
+    - lib/assets/images/todo_auth_back.jpeg

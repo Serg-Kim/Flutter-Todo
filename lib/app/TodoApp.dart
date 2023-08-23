@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../navigators/RootNavigator.dart';
+import '../navigation/RootNavigator.dart';
 
 import '../utils/constants/colors.dart';
 

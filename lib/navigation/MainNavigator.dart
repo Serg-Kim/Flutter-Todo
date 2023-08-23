@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_todo/presentation/todos/navigators/TodosNavigator.dart';
+import 'package:flutter_todo/presentation/todos/navigation/TodosNavigator.dart';
 
 import '../blocs/todos/todos_bloc.dart';
 import '../repositories/todo_repository.dart';
 
-class RootNavigator extends StatefulWidget{
-  const RootNavigator({super.key});
+class MainNavigator extends StatefulWidget{
+  const MainNavigator({super.key});
 
   @override
-  State<RootNavigator> createState() => _RootNavigatorState();
+  State<MainNavigator> createState() => _MainNavigatorState();
 }
 
-class _RootNavigatorState extends State<RootNavigator> {
+class _MainNavigatorState extends State<MainNavigator> {
   int currentPageIndex = 0;
 
   @override

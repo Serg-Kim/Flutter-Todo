@@ -20,6 +20,9 @@ class TodosLoaded extends TodosState {
 }
 
 class TodosError extends TodosState {
-  final String? error;
+  final String error;
   const TodosError(this.error);
+
+  @override
+  List<Object> get props => [error];
 }

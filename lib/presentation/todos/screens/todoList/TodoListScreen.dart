@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_todo/navigation/RootNavigator.dart';
-import 'package:flutter_todo/presentation/auth/screens/AuthScreen.dart';
 
 import '../../../../blocs/auth/auth_bloc.dart';
 import 'widgets/TodoDialog.dart';
@@ -28,7 +27,6 @@ class _TodoListStateScreen extends State<TodoListScreen> {
   @override
   void initState() {
     super.initState();
-
     _textFieldController = TextEditingController();
   }
 

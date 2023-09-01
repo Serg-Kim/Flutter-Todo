@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_todo/presentation/counter/screens/CounterScreen.dart';
+import 'package:flutter_todo/presentation/counter/screens/CounterSubScreen.dart';
 import 'package:flutter_todo/presentation/todos/navigation/TodosNavigator.dart';
 
 import '../blocs/todos/todos_bloc.dart';
@@ -56,16 +58,8 @@ class _MainNavigatorState extends State<MainNavigator> {
             child: const TodosNavigator(),
           ),
         ),
-        Container(
-          color: Colors.green,
-          alignment: Alignment.center,
-          child: const Text('Page 2'),
-        ),
-        Container(
-          color: Colors.blue,
-          alignment: Alignment.center,
-          child: const Text('Page 3'),
-        ),
+        const CounterScreen(),
+        const CounterSubScreen(),
       ][currentPageIndex],
     );
   }

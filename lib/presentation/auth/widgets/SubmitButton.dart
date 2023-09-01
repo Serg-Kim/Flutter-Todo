@@ -28,7 +28,7 @@ class SubmitButton extends StatelessWidget {
                     'user0' &&
                     passwordController.text ==
                         '123456') {
-                  Navigator.pushNamed(
+                  Navigator.pushReplacementNamed(
                       context, 'main/');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
